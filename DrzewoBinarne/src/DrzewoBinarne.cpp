@@ -12,7 +12,7 @@ using namespace std;
 struct Drzewo {
 	int level;
 	int wartosc;
-	struct Drzewo *head, *lewa, *prawa;
+	struct Drzewo *lewa, *prawa;
 };
 
 void wstawWPusteMiejsce(struct Drzewo **head, int nowaWartosc) {
@@ -25,6 +25,7 @@ void wstawWPusteMiejsce(struct Drzewo **head, int nowaWartosc) {
 	struct Drzewo *temp = new Drzewo;
 
 	temp->wartosc = nowaWartosc;
+	temp->level = 0;
 
 	(*head) = temp;
 
@@ -41,33 +42,74 @@ void wstawNastepne(struct Drzewo **head, int nowaWartosc) {
 	kopia = (*head);
 	temp->wartosc = nowaWartosc;
 
-	if (nowaWartosc % 2 == 0) {
+	while (true) {
+		if (nowaWartosc > kopia->wartosc) {
 
-		while (kopia->lewa != NULL) {
-			kopia = kopia->lewa;
-		}
-		(kopia)->lewa = temp;
-		(kopia)->lewa->head = (kopia);
-		(kopia)->lewa->level += 1;
-	} else {
+			if (kopia->prawa == NULL) {
+				temp->level = kopia->level + 1;
+				kopia->prawa = temp;
+				break;
+			}
+			kopia = kopia->prawa;
 
-		while (kopia->prawa != NULL) {
+		} else {
+			if (kopia->lewa == NULL) {
+				temp->level = kopia->level + 1;
+				kopia->lewa = temp;
+				break;
+			}
 			kopia = kopia->lewa;
+
 		}
-		(kopia)->prawa = temp;
-		(kopia)->prawa->head = (kopia);
-		(kopia)->prawa->level += 1;
 	}
 
 }
+void free_tree(Drzewo *node) {
+	if (node != NULL) {
+		free_tree(node->prawa);
 
+		free_tree(node->lewa);
+		free(node);
+	}
+}
+
+void czytanie1(Drzewo *node) {
+	if (node) {
+		cout << node->wartosc << endl;
+		czytanie1(node->lewa);
+		czytanie1(node->prawa);
+	}
+}
+void czytanie2(Drzewo *node) {
+	if (node) {
+		czytanie2(node->lewa);
+		cout << node->wartosc << endl;
+		czytanie2(node->prawa);
+	}
+}
+
+void czytanie3(Drzewo *node) {
+	if (node) {
+		czytanie2(node->lewa);
+		czytanie2(node->prawa);
+		cout << node->wartosc << endl;
+	}
+}
 int main() {
 
-	struct Drzewo *head = NULL;
+	struct Drzewo *head = new Drzewo;
 
-	wstawNastepne(&head, 4);
-	wstawNastepne(&head, 6);
-	wstawNastepne(&head, 8);
+	wstawNastepne(&head, 12);
+	wstawNastepne(&head, 15);
+	wstawNastepne(&head, 51);
+	wstawNastepne(&head, 23);
+	wstawNastepne(&head, 44);
+	wstawNastepne(&head, 16);
+	wstawNastepne(&head, 14);
+	wstawNastepne(&head, 13);
+	wstawNastepne(&head, 11);
+	wstawNastepne(&head, 5);
+	czytanie3(head);
 
 	return 0;
 }
